@@ -21,6 +21,7 @@ def PointInTriangle(pt, v1, v2, v3):
 
   return ((b1 == b2) and (b2 == b3)) and \
          PointInAABB(pt, list(map(max, v1, v2, v3)), list(map(min, v1, v2, v3)))
+#dice si un punto esta dentro de un cuadrilatero
 def punto_adentro(point,a,b,c,d,):
     return PointInTriangle(point,a,b,c) and PointInTriangle(point,c,d,a)
 
@@ -31,7 +32,7 @@ def multiplicar(matriz,puntos):
         for valor in range(len(matriz[fila])):
             resultado[fila]+=(matriz[fila][valor]*puntos[valor])
     return (resultado)
-
+#aplica la tecnica del vecino mas cercano
 def vecinos(imagen,buffer,oldwidth,oldheight,informacion,width,height,k):
     print(width,height)
     a = (buffer[0,0,0],buffer[0,0,1])
@@ -60,6 +61,9 @@ def vecinos(imagen,buffer,oldwidth,oldheight,informacion,width,height,k):
                     imagen[fila,columna]=valores
     return imagen
 #x0,y0 son los puntos que se tomaran como el punto 0,0
+#interpolar es un booleano que indica si se aplicara interpolacion a la imagen transformada
+#tl es la matriz de orden 2
+#img_path es el path de la imagen
 def transformar(tl,img_path,x0,y0,interpolar):
     img = Image.open(img_path).convert('L')
     img.load()
