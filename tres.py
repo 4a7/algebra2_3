@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 
 TL=[[6,-1],[1,-1]]
-IMG_PATH="C:\\Users\\Juan\\Desktop\\prueba.png"
+IMG_PATH="./prueba.png"
 
 
 def sign(p1, p2, p3):
@@ -18,12 +18,14 @@ def PointInTriangle(pt, v1, v2, v3):
   b1 = sign(pt, v1, v2) < 0
   b2 = sign(pt, v2, v3) < 0
   b3 = sign(pt, v3, v1) < 0
-
   return ((b1 == b2) and (b2 == b3)) and \
          PointInAABB(pt, list(map(max, v1, v2, v3)), list(map(min, v1, v2, v3)))
+
+
 #dice si un punto esta dentro de un cuadrilatero
 def punto_adentro(point,a,b,c,d,):
     return PointInTriangle(point,a,b,c) and PointInTriangle(point,c,d,a)
+
 
 #multiplica la TL de una coordenada cartesiana
 def multiplicar(matriz,puntos):
@@ -32,6 +34,8 @@ def multiplicar(matriz,puntos):
         for valor in range(len(matriz[fila])):
             resultado[fila]+=(matriz[fila][valor]*puntos[valor])
     return (resultado)
+
+
 #aplica la tecnica del vecino mas cercano
 def vecinos(imagen,buffer,oldwidth,oldheight,informacion,width,height,k):
     print(width,height)
@@ -60,6 +64,8 @@ def vecinos(imagen,buffer,oldwidth,oldheight,informacion,width,height,k):
                     valores=valores//encontradas
                     imagen[fila,columna]=valores
     return imagen
+
+
 #x0,y0 son los puntos que se tomaran como el punto 0,0
 #interpolar es un booleano que indica si se aplicara interpolacion a la imagen transformada
 #tl es la matriz de orden 2
@@ -101,10 +107,14 @@ def transformar(tl,img_path,x0,y0,interpolar):
     if(interpolar):
         transformada=vecinos(transformada,buffer,width,height,informacion_interpolacion,nuevowidth,nuevoheight,2)
     im=Image.fromarray(transformada)
-    im.show()
+    #im.show()
     im=im.convert("L")
     im.save("res.png")
-transformar(TL,IMG_PATH,0,0,False)
+
+
+
+if __name__ == "__main__":
+    transformar(TL,IMG_PATH,0,0,False)
 
         
     
