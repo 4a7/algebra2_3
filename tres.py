@@ -5,6 +5,7 @@ from PIL import Image
 TL=[[6,-1],[1,-1]]
 IMG_PATH="./prueba.png"
 
+termino = False;
 
 def sign(p1, p2, p3):
   return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1])
@@ -71,6 +72,7 @@ def vecinos(imagen,buffer,oldwidth,oldheight,informacion,width,height,k):
 #tl es la matriz de orden 2
 #img_path es el path de la imagen
 def transformar(tl,img_path,x0,y0,interpolar):
+    termino = False
     img = Image.open(img_path).convert('L')
     img.load()
     imagen=np.asarray(img,dtype="int32")
@@ -110,6 +112,8 @@ def transformar(tl,img_path,x0,y0,interpolar):
     #im.show()
     im=im.convert("L")
     im.save("res.png")
+    print("Saleeee")
+    termino = True
 
 
 
