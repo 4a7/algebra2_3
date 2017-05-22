@@ -185,11 +185,13 @@ def colocarImagenTransformada(marco,i=0):
 		marco.panelImagenTransformada.configure(image=img);
 		marco.panelImagenTransformada.image = img;
 		marco.panelCargandoTexto.configure(text="");
+		img = tk.PhotoImage(file="vacia.png");
+		marco.panelCargando.configure(image=img);
 	else:
 		marcoActual = marco.gifCargando[i];
 		i += 1;
 		marco.panelCargando.configure(image=marcoActual);
-		print("DUERMEEE");
+		#print("DUERMEEE");
 		if i == 60:
 			i = 0;
 		marco.after(100, colocarImagenTransformada, marco, i);
@@ -213,7 +215,7 @@ def aplicarTransformacion(marco, interpolar=False):
 	if marco.texto_matrizEntradas[0].get() == "":
 		matricita[0][0] = 0;
 	else:
-		matricita[0][1] = int(marco.texto_matrizEntradas[0].get());
+		matricita[0][0] = int(marco.texto_matrizEntradas[0].get());
 
 	if marco.texto_matrizEntradas[1].get() == "":
 		matricita[0][1] = 0;
@@ -242,13 +244,6 @@ def aplicarTransformacion(marco, interpolar=False):
 	FALTA UN TRY CATCH PARA CUANDO LA MATRIZ DE TR ES NULA
 	"""
 	return;
-
-
-def actualizarGif(i):
-	marcoActual = gifCargando[i]
-	ind += 1
-	label.configure(image=marcoActual)
-	root.after(100, actualizarGif, i)
 
 
 
