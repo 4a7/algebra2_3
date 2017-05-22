@@ -8,13 +8,34 @@ import sys
 import numpy as np
 #import os;
 
+###################################################################################
+#
+#PARAMETROS
+#
+###################################################################################
+
+#Para definicion de colores de manera parametrizada.
 colorTema   = {"fondo":"#ADD8E6","entradas":"#CAE6EF"};
+
+#Para cambiar el tamano de las imagenes de manera parametrizada.
 tamanoImg   = 400,400;
+
+#Para cambiar la imagen por defecto de manera parametrizada.
 imgDefault  = "vacia.png";
+
+#Para cambiar la tipografia de manera parametrizada.
 fontDefault = ("Eras Light ITC",10);
 
-
+#Cuando se termina la transformacion se para a True.
 termino = False;
+
+
+
+###################################################################################
+#
+#Transformaciones (carnita)
+#
+###################################################################################
 
 def sign(p1, p2, p3):
   return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1])
@@ -128,29 +149,47 @@ def transformar(tl,img_path,x0,y0,interpolar):
 
 
 ###################################################################################
-#########################################INTERFAZ##################################
+#
+#Interfaz
+#
 ###################################################################################
 
+"""
+Coloca el marco de bienvenida.
+Recibe la ventana(tk.Tk()) en donde se trabaja
+"""
 def intro(ventana):
 	#global marco
 	marco        = tk.Frame(ventana, width=1000, height=1000, bg=colorTema["fondo"]);
+	boton_main   = tk.Button(marco,text="Iniciar",command=lambda: abrirMain(ventana,marco),height=2,width=12,font=("Arial",20));
 	label_nombre = tk.Label(marco,text="Transformaciones Lineales Aplicadas a\nImágenes Digitales",fg="red", 
 		bg=colorTema["fondo"],font=(fontDefault[0],30));
-	boton_main   = tk.Button(marco,text="Iniciar",command=lambda: abrirMain(ventana,marco),height=2,width=12,font=("Arial",20));
 	label_nombre.place(x=150,y=100);
 	boton_main.place(x=400, y=300);
+	label_nombre.pack();
+	boton_main.pack();
 	marco.pack();
 	return;
 
 
+"""
+Coloca el marco del programa principal.
 
+Entradas: la ventana(tk.Tk()) en donde se trabaja
+"""
 def abrirMain(ventana,marco):
 	marco.destroy();
 	main(ventana);
 	return;
 
 
+"""
+Presenta al usuario un dialogo para seleccionar imagen, 
+	guarda el string con la direccion al archivo como un atributo en marco
+Luego llama a la funcion que coloca la imagen en el panel correspondiente.
 
+Entradas: el marco en donde se esta trabajando.
+"""
 def abrirImagen(marco):
 	path_imagen = filedialog.askopenfilename(title="Seleccionar imagen");
 	print(path_imagen);
@@ -160,10 +199,14 @@ def abrirImagen(marco):
 
 	marco.boton_cargarImagen.configure(state=tk.NORMAL);
 	colocarImagenOriginal(marco)
-	return path_imagen;
+	return;
 
 
+"""
+Coloca la imagen que esta en la direccion marco.path_imagen en marco.panelImagenOriginal
 
+Entradas: el marco en donde se esta trabajando.
+"""
 def colocarImagenOriginal(marco):
 	image = Image.open(marco.path_imagen);
 	image = image.resize(tamanoImg, Image.ANTIALIAS);
@@ -174,7 +217,12 @@ def colocarImagenOriginal(marco):
 	return;
 
 
+"""
+Espera a que se lleve a cabo la transformacion lineal y 
+	coloca la imagen que esta en la direccion marco.path_imagen en marco.panelImagenTransformada
 
+Entradas: el marco en donde se esta trabajando. numero de marco actual del GIF
+"""
 def colocarImagenTransformada(marco,i=0):
 	global termino;
 	marco.panelCargandoTexto.configure(text="Cargando...");
@@ -198,7 +246,11 @@ def colocarImagenTransformada(marco,i=0):
 	
 
 
+"""
+Valida las entradas de la matriz
 
+Entradas: ay muchas wu!
+"""
 def validar(accion, indice, valorHipotetico, valorPrevio, valorInsertado, tipoValidacion, tipoTrigger, nombreWidget):
 	if accion != "0":
 		if valorInsertado in "-0123456789":
@@ -207,7 +259,14 @@ def validar(accion, indice, valorHipotetico, valorPrevio, valorInsertado, tipoVa
 	return True;
 
 
+"""
+Extrae los enteros de la matriz y valida que si es vacia coloque un 0.
+Luego llama a transformar() con un hilo.
+Finalmente llama a colocarImagenTransformada() con un hilo.
 
+Entradas: el marco en donde se esta trabajando. Booleano si se quiere interpolar la imagen transformada o no
+TODO: AGREGAR EL ORIGEN
+"""
 def aplicarTransformacion(marco, interpolar=False):
 	matricita = [[0,0],
 				 [0,0]];
@@ -236,21 +295,23 @@ def aplicarTransformacion(marco, interpolar=False):
 
 	hilo = Thread(target=transformar, args=(matricita,marco.path_imagen,0,0,interpolar));
 	hilo.start();
-	#tres.transformar(matricita,marco.path_imagen,0,0,interpolar)
 
 	hilo2 = Thread(target=colocarImagenTransformada, args=(marco,0));
 	hilo2.start();
-	"""
-	FALTA UN TRY CATCH PARA CUANDO LA MATRIZ DE TR ES NULA
-	"""
 	return;
 
 
+"""
+Coloca los widgets de la pantalla principal del programa
 
+Entradas: la ventana (tk.TK()) en la que se esta trabajando
+"""
 def main(ventana):
-	ventana.geometry("1000x700+100+0");
+	ventana.geometry("1000x700+100+50");
 	marco = tk.Frame(ventana, width=1000, height=1000, bg=colorTema["fondo"]);
 	marco.pack();
+
+
 	###############################################################################
 	#Coloca imagenes vacias
 	label_nombreImagenOriginal = tk.Label(marco, text = "Imagen Original", bg=colorTema["fondo"],font=fontDefault);
@@ -275,6 +336,7 @@ def main(ventana):
 	panelImagenTransformada.place(x=550,y=20);
 	marco.panelImagenTransformada = panelImagenTransformada;
 
+
 	###############################################################################
 	#Colocar separadores
 	separador_horizontal1 = tk.Frame(relief=tk.RIDGE, bg="black",width=1000, height=1);
@@ -283,6 +345,9 @@ def main(ventana):
 	separador_horizontal1.place(x=0,y=440);
 	separador_horizontal2.place(x=0,y=540);
 	separador_vertical.place(x=500, y=0);
+	###############################################################################
+
+
 	###############################################################################
 	#Colocar buscar imagen
 	label_buscarImagen = tk.Label(marco, text="Buscar Archivo de Imagen:", bg=colorTema["fondo"], font=fontDefault);
@@ -301,6 +366,8 @@ def main(ventana):
 		command=lambda:colocarImagenOriginal(marco), state=tk.DISABLED);
 	boton_cargarImagen.place(x=860,y=480);
 	marco.boton_cargarImagen = boton_cargarImagen;
+	###############################################################################
+
 
 	###############################################################################
 	#Colocar zona matriz
@@ -346,6 +413,8 @@ def main(ventana):
 	panelCargando.place(x=880,y=560);
 	marco.panelCargando = panelCargando;
 	marco.panelCargandoTexto = panelCargandoTexto;
+	###############################################################################
+
 
 	###############################################################################
 	#Menu
@@ -365,7 +434,7 @@ def main(ventana):
 
 
 ventana=tk.Tk();
-ventana.geometry("1000x400+100+100");
+ventana.geometry("850x200+100+100");
 ventana.title("Transformaciones Lineales Aplicadas a Imágenes Digitales.");
 ventana.config(bg=colorTema["fondo"]);
 ventana.resizable(width=False, height=False);
