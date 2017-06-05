@@ -238,9 +238,9 @@ def colocarImagenTransformada(marco,i=0):
 		hsize = int((float(img.size[1])*float(wpercent)))
 		img = img.resize((basewidth,hsize), PIL.Image.ANTIALIAS)
 		"""
-		porcentaje = (max(image.size)/tamanoImg[0]);
+		porcentaje = (tamanoImg[0]/max(image.size));
 		print(porcentaje);
-		img = image.resize( tuple([int(porcentaje * s) for s in image.size]) , Image.ANTIALIAS);
+		image = image.resize( [int(porcentaje * s) for s in image.size] , Image.ANTIALIAS);
 		img = ImageTk.PhotoImage(image);
 
 
@@ -249,11 +249,13 @@ def colocarImagenTransformada(marco,i=0):
 		marco.panelCargandoTexto.configure(text="");
 		img = tk.PhotoImage(file="vacia.png");
 		marco.panelCargando.configure(image=img);
+		"""
 		cruzHorizontal = tk.Frame(marco.panelImagenTransformada, relief=tk.RIDGE, bg="white",width=51, height=2);
 		cruzVertical   = tk.Frame(marco.panelImagenTransformada, relief=tk.RIDGE, bg="white",width=2, height=51);
 		cruzHorizontal.place(x=origen[0]-25,y=origen[1]);
 		cruzVertical.place(x=origen[0], y=origen[1]-25);
 		marco.label_PuntoOrigenTransfor.configure(text="Punto Origen: (%d,%d)"%  (origen[0], origen[1]));
+		"""
 	else:
 		marcoActual = marco.gifCargando[i];
 		i += 1;
@@ -369,10 +371,10 @@ def main(ventana):
 
 	marco.label_PuntoOrigenOriginal=label_PuntoOrigenOriginal;
 
-	label_PuntoOrigenTransfor = tk.Label(marco, bg=colorTema["fondo"],font=fontDefault);
-	label_PuntoOrigenTransfor.place(x=550,y=420);
+	#label_PuntoOrigenTransfor = tk.Label(marco, bg=colorTema["fondo"],font=fontDefault);
+	#label_PuntoOrigenTransfor.place(x=550,y=420);
 
-	marco.label_PuntoOrigenTransfor = label_PuntoOrigenTransfor;
+	#marco.label_PuntoOrigenTransfor = label_PuntoOrigenTransfor;
 
 	def frame_click(event):
 		global origen;
