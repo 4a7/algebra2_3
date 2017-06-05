@@ -2,9 +2,11 @@ import sys;
 import time;
 import numpy     as np;
 import tkinter   as tk;
+import tkinter.messagebox;
 from   threading import Thread;
 from   tkinter   import filedialog;
 from   PIL       import Image, ImageTk;
+
 
 ###################################################################################
 #
@@ -229,8 +231,19 @@ def colocarImagenTransformada(marco,i=0):
 	marco.panelCargandoTexto.configure(text="Cargando...");
 	if termino:
 		image = Image.open("res.png");
-		image = image.resize(tamanoImg, Image.ANTIALIAS);
+		#image = image.resize(tamanoImg, Image.ANTIALIAS);
+		"""
+		if img.size[1]>400
+		wpercent = (basewidth/float(img.size[0]))
+		hsize = int((float(img.size[1])*float(wpercent)))
+		img = img.resize((basewidth,hsize), PIL.Image.ANTIALIAS)
+		"""
+		porcentaje = (max(image.size)/tamanoImg[0]);
+		print(porcentaje);
+		img = image.resize( tuple([int(porcentaje * s) for s in image.size]) , Image.ANTIALIAS);
 		img = ImageTk.PhotoImage(image);
+
+
 		marco.panelImagenTransformada.configure(image=img);
 		marco.panelImagenTransformada.image = img;
 		marco.panelCargandoTexto.configure(text="");
@@ -270,7 +283,6 @@ Luego llama a transformar() con un hilo.
 Finalmente llama a colocarImagenTransformada() con un hilo.
 
 Entradas: el marco en donde se esta trabajando. Booleano si se quiere interpolar la imagen transformada o no
-TODO: AGREGAR EL ORIGEN
 """
 def aplicarTransformacion(marco, interpolar=False):
 	matricita = [[0,0],
@@ -295,6 +307,12 @@ def aplicarTransformacion(marco, interpolar=False):
 		matricita[1][1] = 0;
 	else:
 		matricita[1][1] = int(marco.texto_matrizEntradas[3].get());
+
+	if ((matricita[0][0] == 0 and matricita[0][1] == 0) or 
+		(matricita[1][0] == 0 and matricita[1][1] == 0) or
+		(matricita[0][0] == 0 and matricita[0][1] == 0 and matricita[1][0] == 0 and matricita[1][1] == 0)):
+		tk.messagebox.showerror("Error", "La matriz o alguna de sus filas es nula.");
+		return;
 
 	print(matricita);
 
