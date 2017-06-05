@@ -1,12 +1,10 @@
-import tkinter as tk;
-from tkinter import filedialog;
-from PIL import Image, ImageTk;
-from threading import Thread;
-#import tres;
+import sys;
 import time;
-import sys
-import numpy as np
-#import os;
+import numpy     as np;
+import tkinter   as tk;
+from   threading import Thread;
+from   tkinter   import filedialog;
+from   PIL       import Image, ImageTk;
 
 ###################################################################################
 #
@@ -29,6 +27,9 @@ fontDefault = ("Eras Light ITC",10);
 #Cuando se termina la transformacion se para a True.
 termino = False;
 
+#Punto de origen
+origen = (0,0);
+
 
 
 ###################################################################################
@@ -38,63 +39,63 @@ termino = False;
 ###################################################################################
 
 def sign(p1, p2, p3):
-  return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1])
+  return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1]);
 
 
 def PointInAABB(pt, c1, c2):
   return c2[0] <= pt[0] <= c1[0] and \
-		 c2[1] <= pt[1] <= c1[1]
+		 c2[1] <= pt[1] <= c1[1];
 
 def PointInTriangle(pt, v1, v2, v3):
-	b1 = sign(pt, v1, v2) < 0
-	b2 = sign(pt, v2, v3) < 0
-	b3 = sign(pt, v3, v1) < 0
+	b1 = sign(pt, v1, v2) < 0;
+	b2 = sign(pt, v2, v3) < 0;
+	b3 = sign(pt, v3, v1) < 0;
 	return ((b1 == b2) and (b2 == b3)) and \
-		 PointInAABB(pt, list(map(max, v1, v2, v3)), list(map(min, v1, v2, v3)))
+		 PointInAABB(pt, list(map(max, v1, v2, v3)), list(map(min, v1, v2, v3)));
 
 
 #dice si un punto esta dentro de un cuadrilatero
 def punto_adentro(point,a,b,c,d,):
-	return PointInTriangle(point,a,b,c) and PointInTriangle(point,c,d,a)
+	return PointInTriangle(point,a,b,c) and PointInTriangle(point,c,d,a);
 
 
 #multiplica la TL de una coordenada cartesiana
 def multiplicar(matriz,puntos):
-	resultado=[0,0]
+	resultado=[0,0];
 	for fila in range(len(matriz)):
 		for valor in range(len(matriz[fila])):
-			resultado[fila]+=(matriz[fila][valor]*puntos[valor])
-	return (resultado)
+			resultado[fila]+=(matriz[fila][valor]*puntos[valor]);
+	return (resultado);
 
 
 #aplica la tecnica del vecino mas cercano
 def vecinos(imagen,buffer,oldwidth,oldheight,informacion,width,height,k):
-	print(width,height)
-	a = (buffer[0,0,0],buffer[0,0,1])
-	b = (buffer[0,oldheight-1,0],buffer[0,oldheight-1,1])
-	c = (buffer[oldwidth-1,oldheight-1,0],buffer[oldwidth-1,oldheight-1,1])
-	d = (buffer[oldwidth-1,0,0],buffer[oldwidth-1,0,1])
+	print(width,height);
+	a = (buffer[0,0,0],buffer[0,0,1]);
+	b = (buffer[0,oldheight-1,0],buffer[0,oldheight-1,1]);
+	c = (buffer[oldwidth-1,oldheight-1,0],buffer[oldwidth-1,oldheight-1,1]);
+	d = (buffer[oldwidth-1,0,0],buffer[oldwidth-1,0,1]);
 	for fila in range(width):
-		print(fila)
+		print(fila);
 		for columna in range(height):
 			if(not informacion[fila][columna]):
-				punto=(fila,columna)
+				punto=(fila,columna);
 				if(not punto_adentro(punto,a,b,c,d)):
-					encontradas=0
-					valores=0
-					separacion=1
+					encontradas=0;
+					valores=0;
+					separacion=1;
 					while(encontradas<k):
 						for i in range(-1*separacion,separacion):
 							for j in range(-1*separacion,separacion):
 								if(fila+i>=0 and fila+i<width and columna+j>=0 and columna+j<height):
 									if(informacion[fila+i][columna+j]):
-									   valores+=imagen[fila+i,columna+j]
-									   encontradas+=1
-						separacion+=1
+									   valores+=imagen[fila+i,columna+j];
+									   encontradas+=1;
+						separacion+=1;
 					
-					valores=valores//encontradas
-					imagen[fila,columna]=valores
-	return imagen
+					valores=valores//encontradas;
+					imagen[fila,columna]=valores;
+	return imagen;
 
 
 #x0,y0 son los puntos que se tomaran como el punto 0,0
@@ -103,48 +104,48 @@ def vecinos(imagen,buffer,oldwidth,oldheight,informacion,width,height,k):
 #img_path es el path de la imagen
 def transformar(tl,img_path,x0,y0,interpolar):
 	global termino;
-	termino = False
-	img = Image.open(img_path).convert('L')
-	img.load()
-	imagen=np.asarray(img,dtype="int32")
-	width,height=imagen.shape[0],imagen.shape[1]
-	buffer=np.zeros((width,height,2),dtype="int32")
-	xmax=ymax=-1
-	xmin=ymin=sys.maxsize
+	termino = False;
+	img = Image.open(img_path).convert('L');
+	img.load();
+	imagen=np.asarray(img,dtype="int32");
+	width,height=imagen.shape[0],imagen.shape[1];
+	buffer=np.zeros((width,height,2),dtype="int32");
+	xmax=ymax=-1;
+	xmin=ymin=sys.maxsize;
 	for fila in range(width):
 		for columna in range(height):
-			transformacion=multiplicar(tl,(fila-x0,columna-y0))
-			x=int(transformacion[0])
-			y=int(transformacion[1])
+			transformacion=multiplicar(tl,(fila-x0,columna-y0));
+			x=int(transformacion[0]);
+			y=int(transformacion[1]);
 			if(x>xmax):
-				xmax=x
+				xmax=x;
 			if(x<xmin):
-				xmin=x
+				xmin=x;
 			if(y>ymax):
-				ymax=y
+				ymax=y;
 			if(y<ymin):
-				ymin=y
-			buffer[fila,columna]=[x,y]
-	nuevowidth=xmax-xmin
-	nuevoheight=ymax-ymin
-	informacion_interpolacion=[[False for j in range(nuevoheight)] for i in range(nuevowidth)]
-	transformada=np.zeros((nuevowidth,nuevoheight),dtype="int32")
+				ymin=y;
+			buffer[fila,columna]=[x,y];
+	nuevowidth=xmax-xmin;
+	nuevoheight=ymax-ymin;
+	informacion_interpolacion=[[False for j in range(nuevoheight)] for i in range(nuevowidth)];
+	transformada=np.zeros((nuevowidth,nuevoheight),dtype="int32");
 	for fila in range(width):
 		for columna in range(height):
 			#lo normaliza para que quede en un valor>=0
-			nx=buffer[fila,columna,0]-xmin-1
-			ny=buffer[fila,columna,1]-ymin-1
-			color=imagen[fila,columna]
-			transformada[nx,ny]=color
-			informacion_interpolacion[nx][ny]=True
+			nx=buffer[fila,columna,0]-xmin-1;
+			ny=buffer[fila,columna,1]-ymin-1;
+			color=imagen[fila,columna];
+			transformada[nx,ny]=color;
+			informacion_interpolacion[nx][ny]=True;
 	if(interpolar):
-		transformada=vecinos(transformada,buffer,width,height,informacion_interpolacion,nuevowidth,nuevoheight,2)
-	im=Image.fromarray(transformada)
-	#im.show()
-	im=im.convert("L")
-	im.save("res.png")
-	print("Saleeee")
-	termino = True
+		transformada=vecinos(transformada,buffer,width,height,informacion_interpolacion,nuevowidth,nuevoheight,2);
+	im=Image.fromarray(transformada);
+	#im.show();
+	im=im.convert("L");
+	im.save("res.png");
+	print("Saleeee");
+	termino = True;
 
 
 
@@ -191,7 +192,7 @@ Luego llama a la funcion que coloca la imagen en el panel correspondiente.
 Entradas: el marco en donde se esta trabajando.
 """
 def abrirImagen(marco):
-	path_imagen = filedialog.askopenfilename(title="Seleccionar imagen");
+	path_imagen = tk.filedialog.askopenfilename(title="Seleccionar imagen");
 	print(path_imagen);
 
 	marco.path_imagenStringVar.set(path_imagen);
@@ -235,11 +236,15 @@ def colocarImagenTransformada(marco,i=0):
 		marco.panelCargandoTexto.configure(text="");
 		img = tk.PhotoImage(file="vacia.png");
 		marco.panelCargando.configure(image=img);
+		cruzHorizontal = tk.Frame(marco.panelImagenTransformada, relief=tk.RIDGE, bg="white",width=51, height=2);
+		cruzVertical   = tk.Frame(marco.panelImagenTransformada, relief=tk.RIDGE, bg="white",width=2, height=51);
+		cruzHorizontal.place(x=origen[0]-25,y=origen[1]);
+		cruzVertical.place(x=origen[0], y=origen[1]-25);
+		marco.label_PuntoOrigenTransfor.configure(text="Punto Origen: (%d,%d)"%  (origen[0], origen[1]));
 	else:
 		marcoActual = marco.gifCargando[i];
 		i += 1;
 		marco.panelCargando.configure(image=marcoActual);
-		#print("DUERMEEE");
 		if i == 60:
 			i = 0;
 		marco.after(100, colocarImagenTransformada, marco, i);
@@ -335,6 +340,31 @@ def main(ventana):
 	panelImagenTransformada.image = img;
 	panelImagenTransformada.place(x=550,y=20);
 	marco.panelImagenTransformada = panelImagenTransformada;
+
+	cruzHorizontal = tk.Frame(panelImagenOriginal, relief=tk.RIDGE, bg="white",width=51, height=2);
+	cruzVertical   = tk.Frame(panelImagenOriginal, relief=tk.RIDGE, bg="white",width=2, height=51);
+	cruzHorizontal.place(x=origen[0]-25,y=origen[1]);
+	cruzVertical.place(x=origen[0], y=origen[1]-25);
+
+	label_PuntoOrigenOriginal = tk.Label(marco, text="Punto Origen: (%d,%d)"%  (origen[0], origen[1]), bg=colorTema["fondo"],font=fontDefault);
+	label_PuntoOrigenOriginal.place(x=50,y=420);
+
+	marco.label_PuntoOrigenOriginal=label_PuntoOrigenOriginal;
+
+	label_PuntoOrigenTransfor = tk.Label(marco, bg=colorTema["fondo"],font=fontDefault);
+	label_PuntoOrigenTransfor.place(x=550,y=420);
+
+	marco.label_PuntoOrigenTransfor = label_PuntoOrigenTransfor;
+
+	def frame_click(event):
+		global origen;
+		print("Click! (%d,%d)" % (event.x, event.y));
+		origen = (event.x, event.y);
+		cruzHorizontal.place(x=origen[0]-25,y=origen[1]);
+		cruzVertical.place(x=origen[0], y=origen[1]-25);
+		label_PuntoOrigenOriginal.configure(text="Punto Origen: (%d,%d)"%  (origen[0], origen[1]));
+
+	panelImagenOriginal.bind("<Button-1>", frame_click)
 
 
 	###############################################################################
