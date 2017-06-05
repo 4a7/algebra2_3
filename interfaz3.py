@@ -298,7 +298,7 @@ def aplicarTransformacion(marco, interpolar=False):
 
 	print(matricita);
 
-	hilo = Thread(target=transformar, args=(matricita,marco.path_imagen,0,0,interpolar));
+	hilo = Thread(target=transformar, args=(matricita,marco.path_imagen,origen[0],origen[1],interpolar));
 	hilo.start();
 
 	hilo2 = Thread(target=colocarImagenTransformada, args=(marco,0));
